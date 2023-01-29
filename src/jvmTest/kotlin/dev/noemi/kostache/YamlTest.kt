@@ -38,7 +38,7 @@ open class YamlTest {
 
     @Suppress("UNCHECKED_CAST")
     protected fun makeTests(fileName: String) =
-        readText("src/jvmTest/resources", fileName)!!.let {
+        readText("src/commonTest/resources", fileName)!!.let {
             yamlLoader.loadFromString(it)
         }.let { top ->
             val spec = top as Map<*, *>
