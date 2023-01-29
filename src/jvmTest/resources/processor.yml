@@ -1,0 +1,47 @@
+overview: |
+  Additional tests not in standard.
+
+tests:
+  - name: Context
+    desc: Parent context in maps
+    data:
+      top: { name: "T1", inner: { bottom: "B1"} }
+    template: "{{#top.inner}}{{bottom}}<{{name}}{{/top.inner}}"
+    expected: "B1<T1"
+  - name: Context
+    desc: Parent context is available in partials
+    data: { top: { a: "A", b: { b1: "B1", b2: "B2"} } }
+    partials:
+      p1: '{{b1}}>{{a}}'
+    template: '{{#top.b}}{{>p1}}{{/top.b}}'
+    expected: 'B1>A'
+  - name: Indentation
+    desc: Indent section in multi-level partial
+    data: { flag: true, section: { value: false } }
+    partials:
+      p1: "{{#flag}}yes{{/flag}}{{^flag}}no{{/flag}}\n  {{>p2}}"
+      p2: "{{#section}}*\n{{^value}}not set{{/value}}{{/section}}\n*\n"
+    template: "  {{>p1}}"
+    expected: "  yes\n    *\n    not set\n    *\n"
+  - name: Indentation
+    desc: Space not in standalone position is not indent
+    data: { flag: true }
+    partials:
+      p1: "{{#flag}}yes\n{{/flag}}*"
+    template: "{{^flag}}no\n{{/flag}}  {{>p1}}"
+    expected: "  yes\n*"
+  - name: Indentation
+    desc: Space not in standalone position in inner partial is not indent
+    data: { flag: true, section: { value: false } }
+    partials:
+      p1: "{{#flag}}yes\n{{/flag}}  {{>p2}}"
+      p2: "{{#section}}\n*\n{{^value}}not set{{/value}}\n{{/section}}\n*\n"
+    template: "  {{>p1}}"
+    expected: "  yes\n    *\n  not set\n  *\n"
+  - name: Indentation
+    desc: Falsey section in indented partial does not create line
+    data: { flag: false }
+    partials:
+      p1: "{{#flag}}\n0\n{{/flag}}\n{{^flag}}\n1\n{{/flag}}\n"
+    template: "  {{>p1}}"
+    expected: "  1\n"
