@@ -74,6 +74,6 @@ class TemplateResolver(val resolver: (String) -> Template) : TemplateStore {
 }
 
 
-internal val emptyStore = object : TemplateStore {
+val emptyStore = object : TemplateStore {
     override fun resolve(name: String) = Template()
 }
