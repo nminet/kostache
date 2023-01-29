@@ -28,7 +28,7 @@ interface TemplateStore {
 }
 
 
-expect fun readText(dirname: String, basename: String): String?
+internal expect fun readText(dirname: String, basename: String): String?
 
 class TemplateFolder(
     private val path: String,
