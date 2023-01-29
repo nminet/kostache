@@ -1,7 +1,7 @@
 # kostache
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v1.8.01&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://kotlinlang.org/docs/releases.html)
+[![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v1.8&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://kotlinlang.org/docs/releases.html)
 
 Another kotlin implementation of [Mustache](https://mustache.github.io/mustache.5.html) templates.
 

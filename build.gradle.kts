@@ -19,14 +19,9 @@ kotlin {
             useJUnitPlatform()
         }
     }
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
+
+    macosArm64("osx")
+    iosArm64("ios")
 
     
     sourceSets {
@@ -38,6 +33,8 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(kotlin("scripting-jsr223"))
+                implementation("io.kotest:kotest-assertions-core:5.5.4")
             }
         }
         val jvmMain by getting {
@@ -47,13 +44,12 @@ kotlin {
         }
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlin("scripting-jsr223"))
-                implementation("org.snakeyaml:snakeyaml-engine:2.4")
-                implementation("io.kotest:kotest-assertions-core:5.5.4")
+                implementation("org.snakeyaml:snakeyaml-engine:2.6")
             }
         }
-        val nativeMain by getting
-        val nativeTest by getting
+        val osxMain by getting
+        val osxTest by getting
+        val iosMain by getting
+        val iosTest by getting
     }
 }

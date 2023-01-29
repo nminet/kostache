@@ -29,7 +29,6 @@ import org.snakeyaml.engine.v2.api.LoadSettings
 import org.snakeyaml.engine.v2.nodes.MappingNode
 import org.snakeyaml.engine.v2.nodes.ScalarNode
 import org.snakeyaml.engine.v2.nodes.Tag
-import java.io.File
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
@@ -39,8 +38,8 @@ open class YamlTest {
 
     @Suppress("UNCHECKED_CAST")
     protected fun makeTests(fileName: String) =
-        File("src/jvmTest/resources/$fileName").inputStream().use {
-            yamlLoader.loadFromInputStream(it)
+        readText("src/jvmTest/resources", fileName)!!.let {
+            yamlLoader.loadFromString(it)
         }.let { top ->
             val spec = top as Map<*, *>
             val tests = spec["tests"] as List<*>
