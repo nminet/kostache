@@ -64,13 +64,6 @@ class MapsAndListsContext(
     override fun asLambda(): String? {
         return value.mustacheLambda()?.invoke()
     }
-
-
-    companion object {
-        val wrap = { data: Any? ->
-            MapsAndListsContext(data)
-        }
-    }
 }
 
 

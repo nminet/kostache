@@ -37,12 +37,6 @@ class KClassContext(
     override fun asLambda(): String? {
         return (value as? () -> String)?.invoke()
     }
-
-    companion object {
-        val wrap = { data: Any? ->
-            KClassContext(data)
-        }
-    }
 }
 
 internal fun Any?.child(name: String, body: String?): Any? {

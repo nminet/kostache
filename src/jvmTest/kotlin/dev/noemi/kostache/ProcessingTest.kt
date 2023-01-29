@@ -130,7 +130,7 @@ class ProcessingTest : YamlTest() {
     @Test
     fun `processing template with ad-hoc partials resolver`() {
         val template = "{{>p1}}{{>p2}}"
-        val resolver = TemplateResolver { name ->
+        val resolver = TemplateStore { name ->
             Template("$name says {{text}}\n")
         }
         val data = mapOf("text" to "hi")
@@ -206,7 +206,7 @@ class ProcessingTest : YamlTest() {
                 "{{>p}}"
             }
         )
-        val resolver = TemplateResolver { _ ->
+        val resolver = TemplateStore { _ ->
             Template("{{#s1}}{{.}}{{/s1}}")
         }
         mustacheMapsAndLists(template, resolver).render(data) shouldBe "123"
@@ -326,7 +326,7 @@ class ProcessingTest : YamlTest() {
 
     @Test
     fun `process template outside engine`() {
-        val context = KClassContext.wrap("who" to "world")
+        val context = KClassContext("who" to "world")
         Template("hello, {{who}}!").render(context) shouldBe "hello, world!"
     }
 
@@ -448,13 +448,13 @@ class ProcessingTest : YamlTest() {
         Mustache(
             template = template,
             partials = partials,
-            wrapData = KClassContext.wrap
+            wrapData = ::KClassContext
         )
 
     private fun mustacheMapsAndLists(template: String, partials: TemplateStore = emptyStore) =
         Mustache(
             template = template,
             partials = partials,
-            wrapData = MapsAndListsContext.wrap
+            wrapData = ::MapsAndListsContext
         )
 }

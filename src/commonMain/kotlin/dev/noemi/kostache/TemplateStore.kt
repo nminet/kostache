@@ -23,7 +23,7 @@
 package dev.noemi.kostache
 
 
-interface TemplateStore {
+fun interface TemplateStore {
     fun resolve(name: String): Template
 }
 
@@ -67,13 +67,4 @@ class TemplateMap(sourceMap: Map<String, String>) : TemplateStore {
 }
 
 
-class TemplateResolver(val resolver: (String) -> Template) : TemplateStore {
-    override fun resolve(name: String): Template {
-        return resolver(name)
-    }
-}
-
-
-val emptyStore = object : TemplateStore {
-    override fun resolve(name: String) = Template()
-}
+val emptyStore = TemplateStore { _ -> Template() }

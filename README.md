@@ -35,7 +35,7 @@ class Mustache(
 The constructor parses a template and returns an object ready to render data.
 **template** must be a valid Mustache template, otherwise **IllegalStateException** is raised.
 **partials** indicate how to obtain partials from name.
-**wrap** is a lambda producing a mustache context from raw data.
+**wrap** is a callable producing a mustache context from raw data.
 
 The **render** method produces a String by feeding *data* into the template.
 if **data** is an instance of **Context** it is used as is. Otherwise, **wrap** is called
@@ -60,7 +60,7 @@ class Template(
 
 **template** must be a valid Mustache template, otherwise **IllegalStateException** is raised.
 
-Alternatively the exception can be avoided with
+The exception can be avoided with
 ```kotlin
 val template = Template.load("{{invalid}") ?: Template("fallback")
 val result = template.render(KClassContext(null))
@@ -95,7 +95,7 @@ This wrapper takes data from kotlin **Map** and **List** instances.
 ```kotlin
 val mustache = Mustache(
     template = "hello {{you}}!",
-    wrap = MapsAndListsContext.wrap
+    wrap = ::MapsAndListsContext
 )
 val result = mustache.render(mapOf("you" to "world"))
 ```
@@ -127,7 +127,7 @@ import org.snakeyaml.engine.v2.api.LoadSettings
 val yamlLoader = Load(LoadSettings.builder().build())
 val mustache = Mustache(
     template = "hello {{you}}!",
-    wrap = MapsAndListsContext.wrap
+    wrap = ::MapsAndListsContext
 )
 val data = yamlLoader.loadFromString("you: world")
 val result = mustache.render(data)
@@ -142,7 +142,7 @@ data class Who(val you: String)
 
 val mustache = Mustache(
     template = "hello {{you}}!",
-    wrap = KClassContext.wrap
+    wrap = ::KClassContext
 )
 val result = mustache.render(Who("world"))
 ```
@@ -173,7 +173,7 @@ abstract class Context(
     // get the context associated to a name for a regular section
     abstract fun push(name: String, body: String?, onto: Context): Context?
 
-    // production of mustache lambda if available
+    // mustache lambda if available
     open fun asLambda(): String? = null
     
     // text to render
@@ -182,22 +182,24 @@ abstract class Context(
 ```
 
 Dotted names cause successive calls to **push** - one for each segment of the dotted name.  
-When processing a section, **body** contains the unprocessed text of the section tag. In case
+When pushing a name in section position, **body** contains the unprocessed text of the section tag. In case
 of dotted names all segments receive the same value.  
 For names in interpolation position, **body** is not set.
 
 
 ### Template stores
 
-The **TemplateStore** interface is used by the rendering process to resolve partials.
+The **TemplateStore** functional interface is used by the rendering process to resolve partials.
 
 ```kotlin
-interface TemplateStore {
-    fun resolve(name: String): Template
-}
+    fun interface TemplateStore {
+        fun resolve(name: String): Template
+    }
+
+    val emptyStore: TemplateStore { _ -> Template() }
 ```
 
-Three implementations are provided.
+Two implementations are provided (in addition to *emptyStore*)
 
 
 #### TemplateFolder class
@@ -211,9 +213,10 @@ class TemplateFolder(
 ```
 
 As per Mustache specification, missing templates are handled as null values, not causing error.
-If a file is found that does not parse as a template it is rendered as a string.
+If a file is found and contains valid mustache, it is rendered with the current context. If the file
+does not contain valid mustache, it is rendered as a text string.
 
-The **TemplateFolder** instance maintains a cache of compiled templates. If the partial is modified
+The **TemplateFolder** instance maintains a cache of compiled templates. If the file is modified
 on the filesystem and the new contents should be used, the cache can be cleared with
 
 ```kotlin
@@ -222,7 +225,7 @@ templateFolder.clearCache()
 
 
 #### TemplateMap class
-Look for a String in the *Map*.
+et template from a *Map* of name to mustache source code.
 
 ```kotlin
 class TemplateMap(

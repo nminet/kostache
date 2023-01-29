@@ -117,13 +117,13 @@ class LambdasTest {
     private fun loadForMapsAndLists(template: String) =
         Mustache(
             template = template,
-            wrapData = MapsAndListsContext.wrap
+            wrapData = ::MapsAndListsContext
         )
 
 
     private fun loadForKclass(template: String) =
         Mustache(
             template = template,
-            wrapData = KClassContext.wrap
+            wrapData = ::KClassContext
         )
 }
