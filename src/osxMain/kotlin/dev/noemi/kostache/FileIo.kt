@@ -22,6 +22,11 @@
 
 package dev.noemi.kostache
 
+import platform.Foundation.NSString
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.stringWithContentsOfFile
+
 internal actual fun readText(dirname: String, basename: String): String? {
-    return null
+    val path = "$dirname/$basename"
+    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
 }

@@ -22,11 +22,31 @@
 
 package dev.noemi.kostache
 
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.stringWithContentsOfFile
+import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.memScoped
+import platform.Foundation.NSData
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.create
+import platform.posix.arc4random_uniform
 
-internal actual fun readText(dirname: String, basename: String): String? {
-    val path = "$dirname/$basename"
-    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+
+internal actual fun createTmpDir(): String {
+    val path = "${NSTemporaryDirectory()}/${arc4random_uniform(UInt.MAX_VALUE)}"
+    val created = NSFileManager().createDirectoryAtPath(path, false, null, null)
+    check(created)
+    return path
+}
+
+internal actual fun createFile(path: String, data: ByteArray) {
+    val created = memScoped {
+        val nsdata = NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
+        NSFileManager().createFileAtPath(path, nsdata, null)
+    }
+    check(created)
+}
+
+internal actual fun deleteDir(path: String) {
+    val removed = NSFileManager().removeItemAtPath(path, null)
+    check(removed)
 }

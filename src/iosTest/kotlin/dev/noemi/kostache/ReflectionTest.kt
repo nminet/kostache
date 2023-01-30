@@ -22,11 +22,11 @@
 
 package dev.noemi.kostache
 
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.stringWithContentsOfFile
+import kotlin.test.Test
 
-internal actual fun readText(dirname: String, basename: String): String? {
-    val path = "$dirname/$basename"
-    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+class ReflectionTest {
+
+    @Test
+    fun todo() {
+    }
 }

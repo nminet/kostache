@@ -22,11 +22,22 @@
 
 package dev.noemi.kostache
 
-import kotlin.test.Test
+import java.io.File
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempDirectory
 
-class FileIoTest {
+internal actual fun createTmpDir(): String {
+    return createTempDirectory().absolutePathString()
+}
 
-    @Test
-    fun todo() {
-    }
+internal actual fun createFile(path: String, data: ByteArray) {
+    val file = File(path)
+    check(!file.exists())
+    file.writeBytes(data)
+}
+
+internal actual fun deleteDir(path: String) {
+    val file = File(path)
+    check(file.isDirectory)
+    file.deleteRecursively()
 }

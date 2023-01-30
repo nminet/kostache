@@ -22,11 +22,30 @@
 
 package dev.noemi.kostache
 
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.stringWithContentsOfFile
+class TestFiles {
 
-internal actual fun readText(dirname: String, basename: String): String? {
-    val path = "$dirname/$basename"
-    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+    fun addFile(basename: String, data: ByteArray): TestFiles {
+        if (dirname == "") {
+            dirname = createTmpDir()
+        }
+        createFile("$dirname/$basename", data)
+        return this
+    }
+
+    fun addFile(basename: String, text: String): TestFiles {
+        addFile(basename, text.encodeToByteArray())
+        return this
+    }
+
+    fun <R> use(block: () -> R): R {
+        return block().also {
+            if (dirname.isNotEmpty()) {
+                deleteDir(dirname)
+            }
+        }
+    }
+
+
+    var dirname: String = ""
+        private set
 }

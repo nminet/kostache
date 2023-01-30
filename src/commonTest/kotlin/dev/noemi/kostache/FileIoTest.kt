@@ -22,11 +22,34 @@
 
 package dev.noemi.kostache
 
+import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
 class FileIoTest {
 
     @Test
-    fun todo() {
+    fun `missing file returns null`() {
+        files.use {
+            readText(files.dirname, "xxx")
+        } shouldBe null
     }
+
+    @Test
+    fun `empty file file returns empty String`() {
+        files.use {
+            readText(files.dirname, "empty")
+        } shouldBe ""
+    }
+
+    @Test
+    fun `non-empty file file returns content`() {
+        files.use {
+            readText(files.dirname, "hello")
+        }  shouldBe "world!"
+    }
+
+
+    private var files = TestFiles()
+        .addFile("empty", "")
+        .addFile("hello", "world!")
 }
