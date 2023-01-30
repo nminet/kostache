@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Source files" pattern="src[kostache.commonMain]:dev.noemi.kostache..*||src[kostache.iosMain]:dev.noemi.kostache..*||src[kostache.jvmMain]:dev.noemi.kostache..*||test[kostache.iosTest]:dev.noemi.kostache..*||src[kostache.osxMain]:*..*||test[kostache.jvmTest]:*..*||test[kostache.osxTest]:dev.noemi.kostache.FileIoTest" />
+</component>
