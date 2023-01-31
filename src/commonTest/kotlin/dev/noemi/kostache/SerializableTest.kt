@@ -22,27 +22,15 @@
 
 package dev.noemi.kostache
 
+import dev.noemi.kostache.KotlinxJsonContext.Companion.asJsonElement
 import io.kotest.matchers.shouldBe
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import org.junit.jupiter.api.Test
+import kotlinx.serialization.Serializable
+import kotlin.test.Test
 
 class SerializableTest {
 
-    @Serializable
-    data class Widget(
-        val field1: String,
-        val field2: Int
-    )
-
-    @Serializable
-    data class Gadget(
-        val label: String,
-        val wigs: List<Widget>
-    )
-
     @Test
-    fun `render serialized`() {
+    fun `render serializable`() {
         val data = Gadget(
             label = "hello",
             wigs = listOf(
@@ -50,12 +38,24 @@ class SerializableTest {
                 Widget("2", 2)
             )
         )
-        val json = Json.encodeToString(data)
 
         val mustache = Mustache(
             template = "{{label}}\n{{#wigs}}{{field1}} = {{field2}}\n{{/wigs}}"
         )
 
-        mustache.render(json) shouldBe "hello\n1 = 1\n2 = 2\n"
+        mustache.render(data.asJsonElement) shouldBe "hello\n1 = 1\n2 = 2\n"
     }
 }
+
+
+@Serializable
+data class Widget(
+    val field1: String,
+    val field2: Int
+)
+
+@Serializable
+data class Gadget(
+    val label: String,
+    val wigs: List<Widget>
+)

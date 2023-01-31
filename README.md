@@ -89,6 +89,21 @@ All other values are *true*.
 - *JsonObject* and *JsonPrimitive* process as regular values
 
 
+Classes annotated with @kotlinx.serialization.Serializable can be rendered
+
+```kotlin
+@Serializable
+class Widget(val you: String)
+
+val mustache = Mustache(
+    template = "hello {{you}}!"
+)
+val widget = Widget("world")
+
+mustache.render(widget.asJsonElement)
+```
+
+
 #### MapsAndListsContext class
 This wrapper takes data from kotlin **Map** and **List** instances.
 
@@ -134,7 +149,7 @@ val result = mustache.render(data)
 ```
 
 
-#### KClassContext class
+#### KClassContext class (jvm only)
 This wrapper uses reflection to process kotlin classes.
 
 ```kotlin
@@ -268,8 +283,6 @@ Need to do profiling.
 - Other optimizations?
 
 Cleanup ProcessingTest (split and refocus)
-
-Implement property access using SWIFT reflection for OSX/IOS targets.
 
 
 ## Dependencies

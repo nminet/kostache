@@ -1,4 +1,6 @@
 /*
+ * MIT License
+ *
  * Copyright (c) 2023 Noel MINET
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,6 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
 package dev.noemi.kostache
@@ -27,7 +30,55 @@ import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.full.memberProperties
 
-internal actual fun property(obj: Any, name: String, body: String?): Any? {
+
+class KClassContext(
+    value: Any?,
+    parent: Context? = null
+) : Context(value, parent) {
+
+    override fun isFalsey(): Boolean {
+        return value == null
+                || (value is Boolean) && !value
+                || (value is List<*>) && value.isEmpty()
+                || (value is Set<*>) && value.isEmpty()
+                || (value is Array<*>) && value.isEmpty()
+    }
+
+    override fun push(): List<Context>? {
+        return when (value) {
+            is List<*> -> value
+            is Set<*> -> value
+            is Array<*> -> value.toList()
+            else -> null
+        }?.map {
+            KClassContext(it, this)
+        }
+    }
+
+    override fun push(name: String, body: String?, onto: Context): Context? {
+        return value.child(name, body)?.let {
+            KClassContext(it, onto)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun asLambda(): String? {
+        return (value as? () -> String)?.invoke()
+    }
+}
+
+internal fun Any?.child(name: String, body: String?): Any? {
+    return when (this) {
+        null -> null
+        is Map<*, *> -> get(name)
+        is Map.Entry<*, *> -> if (key == name) value else null
+        is Pair<*, *> -> if (first == name) second else null
+        is Enum<*> -> if (toString() == name) name else null
+        else -> property(this, name, body)
+    }
+}
+
+private fun property(obj: Any, name: String, body: String?): Any? {
     val kClass = obj::class
     return if (kClass.simpleName == null) null // shortcut kotlin synthetic classes
     else kClass.memberProperties.firstOrNull { it.name == name }?.call(obj)?.let { child ->

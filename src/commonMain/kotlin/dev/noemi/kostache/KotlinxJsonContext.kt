@@ -61,5 +61,8 @@ class KotlinxJsonContext(
             }
             KotlinxJsonContext(element)
         }
+
+        inline val <reified T> T.asJsonElement: JsonElement
+            get() = Json.encodeToJsonElement(this)
     }
 }
