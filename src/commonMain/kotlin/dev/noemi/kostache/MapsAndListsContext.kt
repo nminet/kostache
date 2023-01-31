@@ -22,8 +22,6 @@
 
 package dev.noemi.kostache
 
-import kotlin.reflect.typeOf
-
 class MapsAndListsContext(
     value: Any?,
     parent: Context? = null
@@ -42,9 +40,9 @@ class MapsAndListsContext(
         }?.map {
             it.mustacheLambda()?.let { lambda ->
                 MapsAndListsContext(lambda, this)
-            }?: (it as? () -> Any?)?.let { callable ->
+            } ?: (it as? () -> Any?)?.let { callable ->
                 MapsAndListsContext(callable.invoke(), this)
-            }?: MapsAndListsContext(it, this)
+            } ?: MapsAndListsContext(it, this)
         }
     }
 
@@ -67,33 +65,74 @@ class MapsAndListsContext(
 }
 
 
-// TODO: there has to be a better way to handle synthetic types
-private inline fun <reified T> Any?.narrowSynthetic(): T? {
-    val s0 = toString()
-    val s1 = typeOf<T>().toString().commonPrefixWith(s0)
-    return if (s1 == s0 || s1.endsWith("<")) this as? T
-    else null
-}
-
-
 // mustache lambdas are pushed as () -> String
 private fun Any?.mustacheLambda() =
-    narrowSynthetic<() -> String>()
+    this?.let { target ->
+        try {
+            (target as? () -> Any?)?.invoke()?.let { result ->
+                if (result is String) {
+                    { result }
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
 
+@Suppress("UNCHECKED_CAST")
 private fun Any?.mustacheLambda(body: String) =
-    narrowSynthetic<(String) -> String>()?.let {
-        { it(body) }
+    this?.let { target ->
+        try {
+            (target as? (String) -> Any?)?.invoke(body)?.let { result ->
+                if (result is String) {
+                    { result }
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            null
+        }
     }
 
 // iterable section can be pushed as List or as () -> List
-private fun Any?.listFromCallable() =
-    narrowSynthetic<() -> List<*>>()?.invoke()
+private fun Any?.listFromCallable(): List<*>? =
+    this?.let { target ->
+        try {
+            (target as? () -> Any?)?.invoke()?.let { result ->
+                if (result is List<*>) result
+                else null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
 
 
 // callable producing Map are called before pushing
 private fun Any?.mapFromCallable() =
-    narrowSynthetic<() -> Map<*, *>>()?.invoke()
+    this?.let { target ->
+        try {
+            (target as? () -> Any?)?.invoke()?.let { result ->
+                if (result is Map<*, *>) result
+                else null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
 
+@Suppress("UNCHECKED_CAST")
 private fun Any?.mapFromCallable(body: String) =
-    narrowSynthetic<(String) -> Map<*, *>>()?.invoke(body)
-
+    this?.let { target ->
+        try {
+            (target as? (String) -> Any?)?.invoke(body)?.let { result ->
+                if (result is Map<*, *>) result
+                else null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }

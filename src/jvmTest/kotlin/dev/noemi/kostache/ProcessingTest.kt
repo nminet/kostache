@@ -340,7 +340,7 @@ class ProcessingTest : YamlTest() {
     }
 
     @Test
-    fun `text in a lambda section dore not have to parse with default delimiters`() {
+    fun `text in a lambda section does not have to parse with default delimiters`() {
         val template = "{{=| |=}}|#lambda||x|}}|/lambda|"
         val data = mapOf(
             "lambda" to { body: String -> "--$body--" },
