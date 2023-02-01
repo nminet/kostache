@@ -36,103 +36,47 @@ class MapsAndListsContext(
     override fun push(): List<Context>? {
         return when (value) {
             is List<*> -> value
-            else -> value.listFromCallable()
-        }?.map {
-            it.mustacheLambda()?.let { lambda ->
-                MapsAndListsContext(lambda, this)
-            } ?: (it as? () -> Any?)?.let { callable ->
-                MapsAndListsContext(callable.invoke(), this)
-            } ?: MapsAndListsContext(it, this)
+            else -> null
+        }?.mapNotNull {
+            MapsAndListsContext(it, this)
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun push(name: String, body: String?, onto: Context): Context? {
         return when (value) {
             is Map<*, *> -> value
-            else -> value.mapFromCallable()
+            else -> null
         }?.get(name)?.let { v1 ->
             body?.let {
-                v1.mustacheLambda(body) ?: v1.mapFromCallable(body)
-            } ?: v1.mustacheLambda() ?: v1.mapFromCallable() ?: v1
+                when (val callable = (v1 as? (Any?) -> Any?)) {
+                    is Function1<*, *> ->
+                        try {
+                            // create a new lambda capturing the result of call
+                            val result = callable.invoke(body)
+                            val lambda = { result }
+                            lambda
+                        } catch (e: ClassCastException) {
+                            // the function parameter is not a String
+                            null
+                        }
+
+                    else -> null
+                }
+            } ?: v1
         }?.let { v2 ->
             MapsAndListsContext(v2, onto)
         }
     }
 
     override fun asLambda(): String? {
-        return value.mustacheLambda()?.invoke()
+        return when (value) {
+            is Function0<*> -> when (val result = value.invoke()) {
+                is String -> result
+                else -> null
+            }
+
+            else -> null
+        }
     }
 }
-
-
-// mustache lambdas are pushed as () -> String
-private fun Any?.mustacheLambda() =
-    this?.let { target ->
-        try {
-            (target as? () -> Any?)?.invoke()?.let { result ->
-                if (result is String) {
-                    { result }
-                } else {
-                    null
-                }
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-@Suppress("UNCHECKED_CAST")
-private fun Any?.mustacheLambda(body: String) =
-    this?.let { target ->
-        try {
-            (target as? (String) -> Any?)?.invoke(body)?.let { result ->
-                if (result is String) {
-                    { result }
-                } else {
-                    null
-                }
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-// iterable section can be pushed as List or as () -> List
-private fun Any?.listFromCallable(): List<*>? =
-    this?.let { target ->
-        try {
-            (target as? () -> Any?)?.invoke()?.let { result ->
-                if (result is List<*>) result
-                else null
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-
-// callable producing Map are called before pushing
-private fun Any?.mapFromCallable() =
-    this?.let { target ->
-        try {
-            (target as? () -> Any?)?.invoke()?.let { result ->
-                if (result is Map<*, *>) result
-                else null
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-@Suppress("UNCHECKED_CAST")
-private fun Any?.mapFromCallable(body: String) =
-    this?.let { target ->
-        try {
-            (target as? (String) -> Any?)?.invoke(body)?.let { result ->
-                if (result is Map<*, *>) result
-                else null
-            }
-        } catch (e: Exception) {
-            null
-        }
-    }

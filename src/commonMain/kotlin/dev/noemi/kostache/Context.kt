@@ -35,9 +35,26 @@ package dev.noemi.kostache
  * - [asValue]: retrieve the text to emit on render.
  */
 abstract class Context(
-    val value: Any?,
+    value: Any?,
     val parent: Context?
 ) {
+    val value = when (value) {
+        // handle callable source for the context
+        is Function0<*> -> when (val result = value.invoke()) {
+            // String result is handled as a mustache lambda
+            is String -> {
+                // create a new lambda to avoid repeating call on source
+                { result }
+            }
+            // non-null result is the actual context value
+            is Any -> result
+            // null result is handled as a string
+            else -> "null"
+        }
+        // not callable
+        else -> value
+    }
+
     abstract fun isFalsey(): Boolean
     abstract fun push(): List<Context>?
     abstract fun push(name: String, body: String? = null, onto: Context = this): Context?

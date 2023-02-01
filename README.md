@@ -176,7 +176,7 @@ definition of truth (for historical reasons the mustache specification is imprec
 
 ```kotlin
 abstract class Context(
-    val value: Any?,
+    value: Any?,
     val parent: Context?
 ) {
     // indicate if the context renders as a regular or inverted section
@@ -195,6 +195,9 @@ abstract class Context(
     open fun asValue(): String = value.toString()
 }
 ```
+
+When the *value* passed in constructor is a callable with no parameter, it is invoked and the result
+becomes the content's actual value.
 
 Dotted names cause successive calls to **push** - one for each segment of the dotted name.  
 When pushing a name in section position, **body** contains the unprocessed text of the section tag. In case

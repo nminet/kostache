@@ -29,6 +29,16 @@ import kotlin.test.Test
 class MapsAndListsContextTest {
 
     @Test
+    fun `create view from map`() {
+        val view = MapsAndListsContext(
+            mapOf("a" to 1)
+        )
+
+        val v1 = view.push("a")
+        v1?.asValue() shouldBe "1"
+    }
+
+    @Test
     fun `create view from list with one element`() {
         val view = MapsAndListsContext(
             listOf(
@@ -46,12 +56,8 @@ class MapsAndListsContextTest {
     fun `create view from list with two elements`() {
         val view = MapsAndListsContext(
             listOf(
-                mapOf(
-                    "a" to 1
-                ),
-                mapOf(
-                    "b" to 2
-                )
+                mapOf("a" to 1),
+                mapOf("b" to 2)
             )
         )
 
@@ -156,7 +162,7 @@ class MapsAndListsContextTest {
     }
 
     @Test
-    fun `list of lambdas returning String act as mustache lambdas`(){
+    fun `list of lambdas returning String act as list of mustache lambdas`() {
         val ctx = MapsAndListsContext(
             listOf({ "{{x}}" }, { "{{y}}" })
         )
