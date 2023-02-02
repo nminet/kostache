@@ -22,6 +22,7 @@
 
 package dev.noemi.kostache
 
+import dev.noemi.kostache.expects.readText
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 

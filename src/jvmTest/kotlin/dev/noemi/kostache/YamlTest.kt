@@ -22,6 +22,7 @@
 
 package dev.noemi.kostache
 
+import dev.noemi.kostache.expects.readText
 import org.junit.jupiter.api.DynamicTest
 import org.snakeyaml.engine.v2.api.ConstructNode
 import org.snakeyaml.engine.v2.api.Load

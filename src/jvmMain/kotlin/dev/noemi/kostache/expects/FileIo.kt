@@ -20,36 +20,15 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.expects
 
-import dev.noemi.kostache.expects.createFile
-import dev.noemi.kostache.expects.createTmpDir
-import dev.noemi.kostache.expects.deleteDir
+import java.io.File
+import java.io.IOException
 
-class TestFiles {
-
-    fun addFile(basename: String, data: ByteArray): TestFiles {
-        if (dirname == "") {
-            dirname = createTmpDir()
-        }
-        createFile("$dirname/$basename", data)
-        return this
+internal actual fun readText(dirname: String, basename: String): String? {
+    return try {
+        File(dirname, basename).readText()
+    } catch (e: IOException) {
+        null
     }
-
-    fun addFile(basename: String, text: String): TestFiles {
-        addFile(basename, text.encodeToByteArray())
-        return this
-    }
-
-    fun <R> use(block: () -> R): R {
-        return block().also {
-            if (dirname.isNotEmpty()) {
-                deleteDir(dirname)
-            }
-        }
-    }
-
-
-    var dirname: String = ""
-        private set
 }

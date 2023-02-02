@@ -20,8 +20,13 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.expects
 
-internal expect fun createTmpDir(): String
-internal expect fun createFile(path: String, data: ByteArray)
-internal expect fun deleteDir(path: String)
+import platform.Foundation.NSString
+import platform.Foundation.NSUTF8StringEncoding
+import platform.Foundation.stringWithContentsOfFile
+
+internal actual fun readText(dirname: String, basename: String): String? {
+    val path = "$dirname/$basename"
+    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+}

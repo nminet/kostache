@@ -22,13 +22,13 @@
 
 package dev.noemi.kostache
 
+import dev.noemi.kostache.expects.readText
+
 
 fun interface TemplateStore {
     fun resolve(name: String): Template
 }
 
-
-internal expect fun readText(dirname: String, basename: String): String?
 
 class TemplateFolder(
     private val path: String,

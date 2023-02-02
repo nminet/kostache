@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.expects
 
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding

@@ -20,13 +20,24 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.expects
 
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.stringWithContentsOfFile
+import java.io.File
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempDirectory
 
-internal actual fun readText(dirname: String, basename: String): String? {
-    val path = "$dirname/$basename"
-    return NSString.stringWithContentsOfFile(path, NSUTF8StringEncoding, null)
+internal actual fun createTmpDir(): String {
+    return createTempDirectory().absolutePathString()
+}
+
+internal actual fun createFile(path: String, data: ByteArray) {
+    val file = File(path)
+    check(!file.exists())
+    file.writeBytes(data)
+}
+
+internal actual fun deleteDir(path: String) {
+    val file = File(path)
+    check(file.isDirectory)
+    file.deleteRecursively()
 }
