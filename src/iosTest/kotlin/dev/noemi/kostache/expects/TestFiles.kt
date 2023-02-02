@@ -32,23 +32,30 @@ import platform.posix.arc4random_uniform
 
 
 internal actual fun createTmpDir(): String {
-    val path = "${NSTemporaryDirectory()}/${arc4random_uniform(UInt.MAX_VALUE)}"
-    val done = NSFileManager().createDirectoryAtPath(path, false, null, null)
+    val path = "$tmpRoot/${arc4random_uniform(UInt.MAX_VALUE)}"
+    val done = fileManager.createDirectoryAtPath(path, false, null, null)
     check(done)
     return path
 }
 
 internal actual fun writeFile(path: String, data: ByteArray) {
-    val fm = NSFileManager()
-    fm.removeItemAtPath(path, null)
+    fileManager.removeItemAtPath(path, null)
     val done = memScoped {
         val nsdata = NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
-        fm.createFileAtPath(path, nsdata, null)
+        fileManager.createFileAtPath(path, nsdata, null)
     }
     check(done)
 }
 
 internal actual fun deleteDir(path: String) {
-    val done = NSFileManager().removeItemAtPath(path, null)
+    val done = fileManager.removeItemAtPath(path, null)
     check(done)
+}
+
+private val fileManager: NSFileManager by lazy {
+    NSFileManager()
+}
+
+private val tmpRoot: String by lazy {
+    NSTemporaryDirectory()
 }

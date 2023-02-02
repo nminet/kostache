@@ -26,31 +26,31 @@ import dev.noemi.kostache.expects.readText
 import io.kotest.matchers.shouldBe
 import kotlin.test.Test
 
-class FileIoTest {
+internal class FileIoTest {
 
     @Test
     fun `missing file returns null`() {
         files.use {
-            readText(files.dirname, "xxx")
-        } shouldBe null
+            readText(files.dirname, "xxx") shouldBe null
+        }
     }
 
     @Test
     fun `empty file file returns empty String`() {
         files.use {
-            readText(files.dirname, "empty")
-        } shouldBe ""
+            readText(files.dirname, "empty") shouldBe ""
+        }
     }
 
     @Test
     fun `non-empty file file returns content`() {
         files.use {
-            readText(files.dirname, "hello")
-        }  shouldBe "world!"
+            readText(files.dirname, "hello") shouldBe "world!"
+        }
     }
 
 
-    private var files = TestFiles()
+    private val files = TestFiles()
         .writeFile("empty", "")
         .writeFile("hello", "world!")
 }
