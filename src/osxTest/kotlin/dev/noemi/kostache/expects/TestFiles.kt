@@ -38,7 +38,7 @@ internal actual fun createTmpDir(): String {
     return path
 }
 
-internal actual fun createFile(path: String, data: ByteArray) {
+internal actual fun writeFile(path: String, data: ByteArray) {
     val created = memScoped {
         val nsdata = NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
         NSFileManager().createFileAtPath(path, nsdata, null)

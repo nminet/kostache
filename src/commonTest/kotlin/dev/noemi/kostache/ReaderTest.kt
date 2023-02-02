@@ -23,7 +23,8 @@
 package dev.noemi.kostache
 
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
+
 
 class ReaderTest {
 

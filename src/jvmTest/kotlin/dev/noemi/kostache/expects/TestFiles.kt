@@ -30,10 +30,8 @@ internal actual fun createTmpDir(): String {
     return createTempDirectory().absolutePathString()
 }
 
-internal actual fun createFile(path: String, data: ByteArray) {
-    val file = File(path)
-    check(!file.exists())
-    file.writeBytes(data)
+internal actual fun writeFile(path: String, data: ByteArray) {
+    File(path).writeBytes(data)
 }
 
 internal actual fun deleteDir(path: String) {

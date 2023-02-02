@@ -268,6 +268,10 @@ The implementation is a straight delegation. It does not maintain any internal s
 
 ## Caveats
 
+IOS/OSX cannot check the type of a kotlin lambda parameter. Because of this, kotlin lambdas
+in section position taking one parameter MUST take a **String** parameter (which will receive
+the section body).
+
 The Mustache specification does not provide scoping for changes in delimiters inside a file.
 In this implementation the change is effective immediately after the delimiters tag and remains
 in effect until another change or the end of the file. There is an exception if the change
@@ -285,8 +289,6 @@ Need to do profiling.
 - Check it API inhibiting support for lambdas and callable values in 'MapsAndListsContext' has significant benefit.
 - Other optimizations?
 
-Cleanup ProcessingTest (split and refocus)
-
 
 ## Dependencies
 
@@ -294,4 +296,4 @@ The implementation depends on the kotlin standard library, including kotlin refl
 
 Noel MINET
 
-2023-01-29
+2023-02-02

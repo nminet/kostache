@@ -23,5 +23,5 @@
 package dev.noemi.kostache.expects
 
 internal expect fun createTmpDir(): String
-internal expect fun createFile(path: String, data: ByteArray)
+internal expect fun writeFile(path: String, data: ByteArray)
 internal expect fun deleteDir(path: String)

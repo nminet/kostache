@@ -49,7 +49,7 @@ class MapsAndListsContext(
             else -> null
         }?.get(name)?.let { v1 ->
             body?.let {
-                when (val callable = (v1 as? (Any?) -> Any?)) {
+                when (val callable = (v1 as? (String) -> Any?)) {
                     is Function1<*, *> ->
                         try {
                             // create a new lambda capturing the result of call

@@ -51,6 +51,6 @@ class FileIoTest {
 
 
     private var files = TestFiles()
-        .addFile("empty", "")
-        .addFile("hello", "world!")
+        .writeFile("empty", "")
+        .writeFile("hello", "world!")
 }

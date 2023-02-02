@@ -22,30 +22,36 @@
 
 package dev.noemi.kostache
 
-import dev.noemi.kostache.expects.createTmpDir
-import dev.noemi.kostache.expects.deleteDir
+import dev.noemi.kostache.KotlinxJsonContext.Companion.asJsonElement
+import io.kotest.matchers.shouldBe
+import kotlinx.serialization.Serializable
+import kotlin.test.Test
 
-class TestFiles {
+class SerializableProcessingTest {
 
-    fun writeFile(basename: String, data: ByteArray): TestFiles {
-        dev.noemi.kostache.expects.writeFile("$dirname/$basename", data)
-        return this
-    }
-
-    fun writeFile(basename: String, text: String): TestFiles {
-        writeFile(basename, text.encodeToByteArray())
-        return this
-    }
-
-    fun <R> use(block: () -> R): R {
-        return block().also {
-            if (dirname.isNotEmpty()) {
-                deleteDir(dirname)
-            }
-        }
-    }
-
-    val dirname: String by lazy {
-        createTmpDir()
+    @Test
+    fun `render serializable`() {
+        val template = "{{label}}\n{{#wigs}}{{field1}} = {{field2}}\n{{/wigs}}"
+        val data = Gadget(
+            label = "hello",
+            wigs = listOf(
+                Widget("1", 1),
+                Widget("2", 2)
+            )
+        )
+        Mustache(template).render(data.asJsonElement) shouldBe "hello\n1 = 1\n2 = 2\n"
     }
 }
+
+
+@Serializable
+data class Widget(
+    val field1: String,
+    val field2: Int
+)
+
+@Serializable
+data class Gadget(
+    val label: String,
+    val wigs: List<Widget>
+)

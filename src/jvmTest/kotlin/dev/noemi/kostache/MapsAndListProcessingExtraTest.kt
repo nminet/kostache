@@ -22,40 +22,27 @@
 
 package dev.noemi.kostache
 
-import dev.noemi.kostache.KotlinxJsonContext.Companion.asJsonElement
 import io.kotest.matchers.shouldBe
-import kotlinx.serialization.Serializable
 import kotlin.test.Test
 
-class SerializableTest {
 
+class MapsAndListProcessingExtraTest {
+
+    // this test fails on OSX and IOS
     @Test
-    fun `render serializable`() {
-        val data = Gadget(
-            label = "hello",
-            wigs = listOf(
-                Widget("1", 1),
-                Widget("2", 2)
-            )
+    fun `lambda in section position taking non-String parameter is not called`() {
+        val template = "{{#lambda}}{{x}}{{/lambda}}"
+        val data = mapOf(
+            "lambda" to { _: Int -> mapOf("x" to "bad") },
+            "x" to "good"
         )
-
-        val mustache = Mustache(
-            template = "{{label}}\n{{#wigs}}{{field1}} = {{field2}}\n{{/wigs}}"
-        )
-
-        mustache.render(data.asJsonElement) shouldBe "hello\n1 = 1\n2 = 2\n"
+        mustache(template).render(data) shouldBe "good"
     }
+
+
+    private fun mustache(template: String, partials: TemplateStore = emptyStore) =
+        Mustache(
+            template = template,
+            wrapData = ::MapsAndListsContext
+        )
 }
-
-
-@Serializable
-data class Widget(
-    val field1: String,
-    val field2: Int
-)
-
-@Serializable
-data class Gadget(
-    val label: String,
-    val wigs: List<Widget>
-)

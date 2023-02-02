@@ -31,7 +31,8 @@ class KotlinxJsonContext(
 ) : Context(value, parent) {
 
     override fun isFalsey(): Boolean {
-        return value is JsonNull
+        return value == null
+                || value is JsonNull
                 || (value is JsonPrimitive) && !value.isString && value.content == "false"
                 || (value is JsonArray) && value.isEmpty()
     }
@@ -44,10 +45,15 @@ class KotlinxJsonContext(
 
     override fun push(name: String, body: String?, onto: Context): Context? {
         return (value as? JsonObject)?.get(name)?.let {
-            KotlinxJsonContext(
-                if (it is JsonPrimitive && it.isString) it.content else it,
-                onto
-            )
+            KotlinxJsonContext(it, onto)
+        }
+    }
+
+    override fun asValue(): String {
+        return when {
+            value is JsonPrimitive && value.isString -> value.content
+            value is JsonNull -> ""
+            else -> value.toString()
         }
     }
 

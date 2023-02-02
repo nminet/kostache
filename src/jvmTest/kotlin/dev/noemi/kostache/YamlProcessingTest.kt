@@ -22,30 +22,42 @@
 
 package dev.noemi.kostache
 
-import dev.noemi.kostache.expects.createTmpDir
-import dev.noemi.kostache.expects.deleteDir
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestFactory
+import org.snakeyaml.engine.v2.api.Load
+import org.snakeyaml.engine.v2.api.LoadSettings
 
-class TestFiles {
+class YamlProcessingTest : YamlTest() {
 
-    fun writeFile(basename: String, data: ByteArray): TestFiles {
-        dev.noemi.kostache.expects.writeFile("$dirname/$basename", data)
-        return this
+    @Test
+    fun `process yaml`() {
+        val yamlLoader = Load(LoadSettings.builder().build())
+
+        val template = "hello, {{you}}!"
+        val data = yamlLoader.loadFromString("you: world")
+        mustache(template).render(data) shouldBe "hello, world!"
     }
 
-    fun writeFile(basename: String, text: String): TestFiles {
-        writeFile(basename, text.encodeToByteArray())
-        return this
+    @Test
+    fun `text in a lambda section does not have to parse with default delimiters`() {
+        val template = "{{=| |=}}|#lambda||x|}}|/lambda|"
+        val data = mapOf(
+            "lambda" to { body: String -> "--$body--" },
+            "x" to "XXX"
+        )
+        mustache(template).render(data) shouldBe "--XXX}}--"
     }
 
-    fun <R> use(block: () -> R): R {
-        return block().also {
-            if (dirname.isNotEmpty()) {
-                deleteDir(dirname)
-            }
-        }
-    }
 
-    val dirname: String by lazy {
-        createTmpDir()
-    }
+    @TestFactory
+    fun `additional processor tests`() =
+        makeTests("processor.yml")
+
+
+    private fun mustache(template: String) =
+        Mustache(
+            template = template,
+            wrapData = ::MapsAndListsContext
+        )
 }
