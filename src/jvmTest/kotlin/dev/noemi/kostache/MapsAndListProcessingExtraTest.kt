@@ -40,7 +40,7 @@ class MapsAndListProcessingExtraTest {
     }
 
 
-    private fun mustache(template: String, partials: TemplateStore = emptyStore) =
+    private fun mustache(template: String) =
         Mustache(
             template = template,
             wrapData = ::MapsAndListsContext

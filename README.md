@@ -269,8 +269,8 @@ The implementation is a straight delegation. It does not maintain any internal s
 ## Caveats
 
 IOS/OSX cannot check the type of a kotlin lambda parameter. Because of this, kotlin lambdas
-in section position taking one parameter MUST take a **String** parameter (which will receive
-the section body).
+in section position taking one parameter must take a ***String*** parameter (which will receive
+the section body). Any other parameter type triggers undefined behaviour.
 
 The Mustache specification does not provide scoping for changes in delimiters inside a file.
 In this implementation the change is effective immediately after the delimiters tag and remains
