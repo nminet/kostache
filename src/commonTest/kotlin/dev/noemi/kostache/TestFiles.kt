@@ -37,8 +37,8 @@ class TestFiles {
         return this
     }
 
-    fun <R> use(block: () -> R): R {
-        return block().also {
+    fun <R> use(block: (TestFiles) -> R): R {
+        return block(this).also {
             if (dirname.isNotEmpty()) {
                 deleteDir(dirname)
             }

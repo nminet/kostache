@@ -130,32 +130,33 @@ class MapsAndListsProcessingTest {
 
     @Test
     fun `processing with partials from a folder`() {
-        val template = "{{>partial1}} {{>partial2}}{{>not_found}}!"
-        val partials = TestFiles()
-            .writeFile("partial1.mustache", "{{text1}}")
-            .writeFile("partial2.mustache", "{{text2}}")
-        val resolver = TemplateFolder(partials.dirname)
-        val data = mapOf("text1" to "hello", "text2" to "world")
-        partials.use {
-            mustache(template, resolver).render(data)
-        } shouldBe "hello world!"
+        TestFiles().use {
+            val template = "{{>partial1}} {{>partial2}}{{>not_found}}!"
+            val resolver = TemplateFolder(it.dirname)
+
+            it.writeFile("partial1.mustache", "{{text1}}")
+            it.writeFile("partial2.mustache", "{{text2}}")
+
+            val data = mapOf("text1" to "hello", "text2" to "world")
+            mustache(template, resolver).render(data) shouldBe "hello world!"
+        }
     }
 
     @Test
     fun `updating partials in a folder requires clearing cache`() {
-        val template = "{{>partial}}"
-        val partials = TestFiles()
-        val resolver = TemplateFolder(partials.dirname)
+        TestFiles().use {
+            val template = "{{>partial}}"
+            val resolver = TemplateFolder(it.dirname)
+            val mustache = mustache(template, resolver)
 
-        partials.use {
-            partials.writeFile("partial.mustache", "step1")
-            mustache(template, resolver).render() shouldBe "step1"
+            it.writeFile("partial.mustache", "step1")
+            mustache.render() shouldBe "step1"
 
-            partials.writeFile("partial.mustache", "step2")
-            mustache(template, resolver).render() shouldBe "step1"
+            it.writeFile("partial.mustache", "step2")
+            mustache.render() shouldBe "step1"
 
             resolver.clearCache()
-            mustache(template, resolver).render() shouldBe "step2"
+            mustache.render() shouldBe "step2"
         }
     }
 
