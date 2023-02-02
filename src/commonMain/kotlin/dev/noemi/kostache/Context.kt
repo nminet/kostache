@@ -46,10 +46,8 @@ abstract class Context(
                 // create a new lambda to avoid repeating call on source
                 { result }
             }
-            // non-null result is the actual context value
-            is Any -> result
-            // null result is handled as a string
-            else -> "null"
+            // anything else is the actual context value
+            else -> result
         }
         // not callable
         else -> value
@@ -64,7 +62,7 @@ abstract class Context(
     }
 
     open fun asValue(): String {
-        return value.toString()
+        return value?.toString() ?: ""
     }
 
 

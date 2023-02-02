@@ -390,7 +390,7 @@ class ProcessingTest : YamlTest() {
         val data = mapOf(
             "callables" to listOf( { 42 }, { null }, { listOf(1, 2, 3) })
         )
-        mustacheMapsAndLists(template).render(data) shouldBe "42\nnull\n[1, 2, 3]\n"
+        mustacheMapsAndLists(template).render(data) shouldBe "42\n\n[1, 2, 3]\n"
     }
 
     @Test
