@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Kotlin](https://img.shields.io/static/v1?label=Kotlin&message=v1.8&color=7f52ff&logo=kotlin&logoColor=7f52ff)](https://kotlinlang.org/docs/releases.html)
 
-Another kotlin implementation of [Mustache](https://mustache.github.io/mustache.5.html) templates.
+A kotlin-multiplatform implementation of [Mustache](https://mustache.github.io/mustache.5.html) templates.
 
 
 ## Reference
@@ -243,7 +243,7 @@ templateFolder.clearCache()
 
 
 #### TemplateMap class
-et template from a *Map* of name to mustache source code.
+Get template from a *Map* of name to mustache source code.
 
 ```kotlin
 class TemplateMap(
@@ -254,29 +254,11 @@ class TemplateMap(
 An invalid template in *sourceMap* will trigger **IllegalStateException** on construction.
 
 
-#### TemplateResolver class
-Call the supplied function every time a partial is requested.
-
-```kotlin
-class TemplateResolver(
-    resolver: (String) -> Template
-) : TemplateStore
-```
-
-The implementation is a straight delegation. It does not maintain any internal state.
-
-
 ## Caveats
 
 IOS/OSX cannot check the type of a kotlin lambda parameter. Because of this, kotlin lambdas
 in section position taking one parameter must take a ***String*** parameter (which will receive
 the section body). Any other parameter type triggers undefined behaviour.
-
-The Mustache specification does not provide scoping for changes in delimiters inside a file.
-In this implementation the change is effective immediately after the delimiters tag and remains
-in effect until another change or the end of the file. There is an exception if the change
-in delimiters is in the result of a call to a lambda section. In that case the change only affects
-the processing of the template produced by the lambda.
 
 The * (asterisk) character following the opening sigil for a partial or parent tag indicates
 a dynamic name. In any other position the asterisk is handled as a regular symbol character.
@@ -286,14 +268,15 @@ a dynamic name. In any other position the asterisk is handled as a regular symbo
 
 Need to do profiling.
 - Performance with kotlin-reflect would probably benefit from caching.
-- Check it API inhibiting support for lambdas and callable values in 'MapsAndListsContext' has significant benefit.
+- Check if option to inhibit support for lambdas and callable values in 'MapsAndListsContext' has significant benefit.
 - Other optimizations?
 
+Other KMM targets?
 
 ## Dependencies
 
-The implementation depends on the kotlin standard library, including kotlin reflection and kotlinx serialization.
+The implementation depends on the kotlin standard library, including kotlinx serialization and kotlinx reflection.
 
 Noel MINET
 
-2023-02-02
+2023-02-04

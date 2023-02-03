@@ -2,9 +2,10 @@ plugins {
     val kotlinVersion = "1.8.0"
     kotlin("multiplatform") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
+    id("maven-publish")
 }
 
-group = "dev.nmi.kostache"
+group = "dev.noemi"
 version = "1.0"
 
 repositories {
@@ -24,7 +25,7 @@ kotlin {
     iosArm64("ios")
     iosSimulatorArm64()
 
-    
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -58,4 +59,7 @@ kotlin {
         iosSimulatorArm64Main.dependsOn(iosMain)
         iosSimulatorArm64Test.dependsOn(iosTest)
     }
+
+    tasks.matching { it.group == "publishing" && it.name.contains("IosSimulator") }
+        .configureEach { enabled = false }
 }

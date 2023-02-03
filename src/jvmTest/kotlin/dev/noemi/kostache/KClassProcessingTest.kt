@@ -143,40 +143,6 @@ class KClassProcessingTest {
     }
 
     @Test
-    fun `missing tag character throws`() {
-        shouldThrowExactly<IllegalStateException> {
-            Template("{{")
-        }
-    }
-
-    @Test
-    fun `incomplete section throws`() {
-        shouldThrowExactly<IllegalStateException> {
-            Template("{{#xxx}}")
-        }
-    }
-
-    @Test
-    fun `delimiter with equals throws`() {
-        shouldThrowExactly<IllegalStateException> {
-            Template("{{= |= =| =}}")
-        }
-    }
-
-    @Test
-    fun `delimiter with whitespace throws`() {
-        shouldThrowExactly<IllegalStateException> {
-            Template("{{= | x | =}}")
-        }
-    }
-
-    @Test
-    fun `process template outside engine`() {
-        val context = KClassContext("who" to "world")
-        Template("hello, {{who}}!").render(context) shouldBe "hello, world!"
-    }
-
-    @Test
     fun `method returning non-String is interpolated`() {
         mustache("{{method3}}").render(D()) shouldBe "42"
     }
@@ -196,6 +162,12 @@ class KClassProcessingTest {
         val template = "{{#method4}}{{string}}{{/method4}}"
         val data = D()
         mustache(template).render(data) shouldBe "hello"
+    }
+
+    @Test
+    fun `process template outside engine`() {
+        val context = KClassContext("who" to "world")
+        Template("hello, {{who}}!").render(context) shouldBe "hello, world!"
     }
 
     @Test
