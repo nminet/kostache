@@ -5,8 +5,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "dev.noemi"
-version = "1.0"
+group = "dev.noemi.kostache"
+version = "1.0.0"
 
 repositories {
     mavenCentral()

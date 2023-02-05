@@ -35,7 +35,7 @@ internal actual fun writeFile(path: String, data: ByteArray) {
 }
 
 internal actual fun deleteDir(path: String) {
-    val file = File(path)
-    check(file.isDirectory)
-    file.deleteRecursively()
+    File(path).also {
+        check(it.isDirectory)
+    }.deleteRecursively()
 }
