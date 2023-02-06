@@ -20,42 +20,32 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache.expects
+package dev.noemi.kostache.testing
 
-import kotlinx.cinterop.allocArrayOf
-import kotlinx.cinterop.memScoped
-import platform.Foundation.NSData
-import platform.Foundation.NSFileManager
-import platform.Foundation.NSTemporaryDirectory
-import platform.Foundation.create
-import platform.posix.arc4random_uniform
+import dev.noemi.kostache.testing.expects.createTmpDir
+import dev.noemi.kostache.testing.expects.deleteDir
 
+class TestFiles {
 
-internal actual fun createTmpDir(): String {
-    val path = "$tmpRoot/${arc4random_uniform(UInt.MAX_VALUE)}"
-    val done = fileManager.createDirectoryAtPath(path, false, null, null)
-    check(done)
-    return path
-}
-
-internal actual fun writeFile(path: String, data: ByteArray) {
-    fileManager.removeItemAtPath(path, null)
-    val done = memScoped {
-        val nsdata = NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
-        fileManager.createFileAtPath(path, nsdata, null)
+    fun writeFile(basename: String, data: ByteArray): TestFiles {
+        dev.noemi.kostache.testing.expects.writeFile("$dirname/$basename", data)
+        return this
     }
-    check(done)
-}
 
-internal actual fun deleteDir(path: String) {
-    val done = fileManager.removeItemAtPath(path, null)
-    check(done)
-}
+    fun writeFile(basename: String, text: String): TestFiles {
+        writeFile(basename, text.encodeToByteArray())
+        return this
+    }
 
-private val fileManager: NSFileManager by lazy {
-    NSFileManager()
-}
+    fun <R> use(block: (TestFiles) -> R): R {
+        return block(this).also {
+            if (dirname.isNotEmpty()) {
+                deleteDir(dirname)
+            }
+        }
+    }
 
-private val tmpRoot: String by lazy {
-    NSTemporaryDirectory()
+    val dirname: String by lazy {
+        createTmpDir()
+    }
 }

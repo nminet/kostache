@@ -20,8 +20,11 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.testing
 
+import dev.noemi.kostache.MapsAndListsContext
+import dev.noemi.kostache.Template
+import dev.noemi.kostache.TemplateMap
 import dev.noemi.kostache.expects.readText
 import org.junit.jupiter.api.DynamicTest
 import org.snakeyaml.engine.v2.api.ConstructNode

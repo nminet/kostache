@@ -20,22 +20,42 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache.expects
+package dev.noemi.kostache.testing.expects
 
-import java.io.File
-import kotlin.io.path.absolutePathString
-import kotlin.io.path.createTempDirectory
+import kotlinx.cinterop.allocArrayOf
+import kotlinx.cinterop.memScoped
+import platform.Foundation.NSData
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.create
+import platform.posix.arc4random_uniform
+
 
 internal actual fun createTmpDir(): String {
-    return createTempDirectory().absolutePathString()
+    val path = "$tmpRoot/${arc4random_uniform(UInt.MAX_VALUE)}"
+    val done = fileManager.createDirectoryAtPath(path, false, null, null)
+    check(done)
+    return path
 }
 
 internal actual fun writeFile(path: String, data: ByteArray) {
-    File(path).writeBytes(data)
+    fileManager.removeItemAtPath(path, null)
+    val done = memScoped {
+        val nsdata = NSData.create(bytes = allocArrayOf(data), length = data.size.toULong())
+        fileManager.createFileAtPath(path, nsdata, null)
+    }
+    check(done)
 }
 
 internal actual fun deleteDir(path: String) {
-    File(path).also {
-        check(it.isDirectory)
-    }.deleteRecursively()
+    val done = fileManager.removeItemAtPath(path, null)
+    check(done)
+}
+
+private val fileManager: NSFileManager by lazy {
+    NSFileManager()
+}
+
+private val tmpRoot: String by lazy {
+    NSTemporaryDirectory()
 }

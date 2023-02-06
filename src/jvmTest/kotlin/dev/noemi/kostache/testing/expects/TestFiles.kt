@@ -20,32 +20,22 @@
  * SOFTWARE.
  */
 
-package dev.noemi.kostache
+package dev.noemi.kostache.testing.expects
 
-import dev.noemi.kostache.expects.createTmpDir
-import dev.noemi.kostache.expects.deleteDir
+import java.io.File
+import kotlin.io.path.absolutePathString
+import kotlin.io.path.createTempDirectory
 
-class TestFiles {
+internal actual fun createTmpDir(): String {
+    return createTempDirectory().absolutePathString()
+}
 
-    fun writeFile(basename: String, data: ByteArray): TestFiles {
-        dev.noemi.kostache.expects.writeFile("$dirname/$basename", data)
-        return this
-    }
+internal actual fun writeFile(path: String, data: ByteArray) {
+    File(path).writeBytes(data)
+}
 
-    fun writeFile(basename: String, text: String): TestFiles {
-        writeFile(basename, text.encodeToByteArray())
-        return this
-    }
-
-    fun <R> use(block: (TestFiles) -> R): R {
-        return block(this).also {
-            if (dirname.isNotEmpty()) {
-                deleteDir(dirname)
-            }
-        }
-    }
-
-    val dirname: String by lazy {
-        createTmpDir()
-    }
+internal actual fun deleteDir(path: String) {
+    File(path).also {
+        check(it.isDirectory)
+    }.deleteRecursively()
 }

@@ -22,6 +22,7 @@
 
 package dev.noemi.kostache
 
+import dev.noemi.kostache.testing.YamlTest
 import org.junit.jupiter.api.TestFactory
 
 /**
