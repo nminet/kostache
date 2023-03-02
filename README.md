@@ -259,7 +259,7 @@ class TemplateMap(
 An invalid template in *sourceMap* will trigger **IllegalStateException** on construction.
 
 
-#### TemplateFromResources class (java target only)
+#### TemplateFromResources class (jvm only)
 Get template from a resource folder in a jar.
 
 ```kotlin

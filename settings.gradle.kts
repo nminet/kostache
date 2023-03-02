@@ -1,3 +1,1 @@
-
-rootProject.name = "kostache"
-
+rootProject.name = "kmm-mustache"

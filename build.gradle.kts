@@ -5,8 +5,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "dev.noemi.kostache"
-version = "1.0.1"
+group = "dev.nminet.kmm"
+version = "0.9.1"
 
 repositories {
     mavenCentral()
@@ -60,6 +60,7 @@ kotlin {
         iosSimulatorArm64Test.dependsOn(iosTest)
     }
 
-    tasks.matching { it.group == "publishing" && it.name.contains("IosSimulator") }
-        .configureEach { enabled = false }
+    tasks.matching {
+        it.group == "publishing" && it.name.contains("IosSimulator")
+    }.configureEach { enabled = false }
 }
