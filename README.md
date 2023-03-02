@@ -21,7 +21,7 @@ This implementation includes all core modules as well as the optional *inheritan
 The main API is the **Mustache** class, capturing a template and the environment to render data.
 
 ```kotlin
-import dev.noemi.kostache.Mustache
+import dev.nminet.kmm.mustache.Mustache
 
 class Mustache(
     template: String,
@@ -46,7 +46,7 @@ to wrap the data for rendering.
 The **Template** class captures a parse result and can render when given a context.
 
 ```kotlin
-import dev.noemi.kostache.Template
+import dev.nminet.kmm.mustache.Template
 
 class Template(
     template: String
@@ -214,7 +214,9 @@ The **TemplateStore** functional interface is used by the rendering process to r
         fun resolve(name: String): Template
     }
 
-    val emptyStore: TemplateStore { _ -> Template() }
+    val emptyStore: TemplateStore { _ ->
+        Template()
+    }
 ```
 
 Three implementations are provided (in addition to *emptyStore*)
@@ -273,6 +275,9 @@ Otherwise the parameter to **resolve** is used as given.
 
 A missing or invalid template is silently ignored (returning an empty Template).
 
+This class maintains a map of compiled templates that remains in memory until
+the instance is collected.
+
 
 ## Caveats
 
@@ -299,4 +304,4 @@ The implementation depends on the kotlin standard library, including kotlinx ser
 
 Noel MINET
 
-2023-02-04
+2023-03-03

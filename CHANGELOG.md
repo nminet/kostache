@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2023-02-04
+## Unreleased [1.0.0] - 2023-03-03
 ### Added
 - minimal implementation of [Mustache specs](https://github.com/mustache/spec)
   - compilation of template from **String**
@@ -20,15 +20,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - templates retrieved from a directory
   - templates compiled from strings
   - ad-hoc resolution with *(String) -> Template* function
+  - templates retrieved from jar resources (java platform only)
 - kotlin multiplatform build
   - jvm
   - osxArm
-
-
-## Unreleased [1.0.1] - 2023-03-02
-### Added
-- facility to retrieve templates from jar resources
-
-### Changed
-- behaviour change in **TemplateFolder**
-  - don't add '.' to folder names when **extension** is empty
