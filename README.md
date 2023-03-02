@@ -217,7 +217,7 @@ The **TemplateStore** functional interface is used by the rendering process to r
     val emptyStore: TemplateStore { _ -> Template() }
 ```
 
-Two implementations are provided (in addition to *emptyStore*)
+Three implementations are provided (in addition to *emptyStore*)
 
 
 #### TemplateFolder class
@@ -229,6 +229,9 @@ class TemplateFolder(
     extension: String = "mustache"
 ) : TemplateStore
 ```
+
+If **extension** is not empty it is appended to names supplied to **resolve**.
+Otherwise the parameter to **resolve** is used as given.
 
 As per Mustache specification, missing templates are handled as null values, not causing error.
 If a file is found and contains valid mustache, it is rendered with the current context. If the file
@@ -252,6 +255,23 @@ class TemplateMap(
 ```
 
 An invalid template in *sourceMap* will trigger **IllegalStateException** on construction.
+
+
+#### TemplateFromResources class (java target only)
+Get template from a resource folder in a jar.
+
+```kotlin
+class TemplateFromResources(
+    templateDir: String,
+    extension: String = "mustache",
+    classLoader: ClassLoader = ClassLoader.getSystemClassLoader()
+) : TemplateStore
+```
+
+If **extension** is not empty it is appended to names supplied to **resolve**.
+Otherwise the parameter to **resolve** is used as given.
+
+A missing or invalid template is silently ignored (returning an empty Template).
 
 
 ## Caveats

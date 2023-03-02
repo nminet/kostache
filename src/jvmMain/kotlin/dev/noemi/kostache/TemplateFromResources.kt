@@ -22,47 +22,21 @@
 
 package dev.noemi.kostache
 
-import dev.noemi.kostache.expects.readText
-
-
-fun interface TemplateStore {
-    fun resolve(name: String): Template
-}
-
-
-class TemplateFolder(
-    private val path: String,
-    extension: String = "mustache"
-) : TemplateStore {
-
-    private val templates = mutableMapOf<String, Template>()
+class TemplateFromResources(
+    val templateDir: String,
+    extension: String = "mustache",
+    val classLoader: ClassLoader = ClassLoader.getSystemClassLoader()
+): TemplateStore {
+    private val templatesCache = mutableMapOf<String, Template>()
     private val postfix = if (extension.isNotEmpty()) ".$extension" else ""
 
     override fun resolve(name: String): Template {
-        return templates.getOrPut(name) {
-            readText(path, "$name$postfix")?.let {
-                Template(it)
-            } ?: Template()
+        return templatesCache.getOrPut(name) {
+            val path = "$templateDir/$name$postfix"
+            val text = kotlin.runCatching {
+                classLoader.getResource(path).readText()
+            }.getOrNull()
+            Template(text ?: "")
         }
     }
-
-    fun clearCache() {
-        templates.clear()
-    }
-
 }
-
-
-class TemplateMap(sourceMap: Map<String, String>) : TemplateStore {
-
-    private val templates = sourceMap.mapValues { (_, template) ->
-        Template(template)
-    }
-
-    override fun resolve(name: String): Template {
-        return templates[name] ?: Template()
-    }
-}
-
-
-val emptyStore = TemplateStore { _ -> Template() }
