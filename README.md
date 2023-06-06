@@ -179,13 +179,14 @@ abstract class Context(
     value: Any?,
     val parent: Context?
 ) {
-    // indicate if the context renders as a regular or inverted section
+    // indicate if the context renders as a regular or inverted section.
     abstract fun isFalsey(): Boolean
 
-    // get all child contexts for an iterable section, or null if not iterable
+    // get all direct child contexts for an iterable section, or null if not iterable.
     abstract fun push(): List<Context>?
 
-    // get the context associated to a name for a regular section
+    // get the direct child context associated to a name for a regular section.
+    // - if a context is found, the 'onto' parameter must be used as its parent.
     abstract fun push(name: String, body: String?, onto: Context): Context?
 
     // mustache lambda if available

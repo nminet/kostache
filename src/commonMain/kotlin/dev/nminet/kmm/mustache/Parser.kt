@@ -27,7 +27,8 @@ internal class Parser(
     private val reader: Reader,
     private var openDelimiter: String,
     private var closeDelimiter: String,
-    private val sectionTag: String? = null
+    private val sectionTag: String? = null,
+    private val sectionQualifier: String? = null
 ) {
     fun process(): Segments {
         reader.setDelimiters(openDelimiter, closeDelimiter)
@@ -72,8 +73,15 @@ internal class Parser(
     }
 
     private fun checkEndOfSection(): Boolean {
-        processTag { name ->
-            check(name == sectionTag) { "unexpected end of section" }
+        processTag { tag ->
+            val (name, qualifier) = if (tag.startsWith("*") || tag.startsWith("?")) {
+                Pair(tag.drop(1).trimStart(), tag.substring(0, 1))
+            } else {
+                Pair(tag, "")
+            }
+            check(name == sectionTag && qualifier == sectionQualifier) {
+                "unexpected end of section"
+            }
         }
         return false
     }
@@ -85,10 +93,12 @@ internal class Parser(
     }
 
     private fun addSection(): Boolean {
-        return addSegment { name ->
+        return addSegment { tag ->
+            val isSeqCheck = tag.startsWith('?')
+            val (name, qualifier) = if (isSeqCheck) Pair(tag.drop(1).trimStart(), "?") else Pair(tag, "")
             val start = reader.pos
-            val children = parseTag(name)
-            Section(name, children, openDelimiter, closeDelimiter, reader.input, start, reader.mark)
+            val children = parseTag(name, qualifier)
+            Section(name, isSeqCheck, children, openDelimiter, closeDelimiter, reader.input, start, reader.mark)
         }
     }
 
@@ -107,8 +117,8 @@ internal class Parser(
     private fun addPartial(isParent: Boolean): Boolean {
         return addSegment { tag ->
             val isDynamic = tag.startsWith('*')
-            val name = if (isDynamic) tag.drop(1).trimStart() else tag
-            val parameters = if (isParent) parseTag(name).filterIsInstance<Block>() else null
+            val (name, qualifier) = if (isDynamic) Pair(tag.drop(1).trimStart(), "*") else Pair(tag, "")
+            val parameters = if (isParent) parseTag(name, qualifier).filterIsInstance<Block>() else null
             Partial(name, isDynamic, reader.indent, parameters)
         }
     }
@@ -144,8 +154,8 @@ internal class Parser(
         }
     }
 
-    private fun parseTag(name: String): Segments {
-        return Parser(reader, openDelimiter, closeDelimiter, name).process()
+    private fun parseTag(name: String, qualifier: String = ""): Segments {
+        return Parser(reader, openDelimiter, closeDelimiter, name, qualifier).process()
     }
 
     private val segments = mutableListOf<Segment>()

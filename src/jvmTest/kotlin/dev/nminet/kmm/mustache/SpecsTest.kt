@@ -68,4 +68,8 @@ class SpecsTest : YamlTest() {
     @TestFactory
     fun `dynamic names tests`() =
         makeTests("specs/~dynamic-names.yml")
+
+    @TestFactory
+    fun `sequence check tests`() =
+        makeTests("specs/~sequence-check.yml")
 }

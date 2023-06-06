@@ -73,6 +73,7 @@ internal class Value(
 
 internal class Section(
     private val name: String,
+    private val isSeqCheck: Boolean,
     private val children: Segments,
     private val openDelimiter: String,
     private val closeDelimiter: String,
@@ -84,23 +85,31 @@ internal class Section(
     override fun render(context: Context, partials: TemplateStore, indent: String, newLine: Boolean): String? {
         val body = input.substring(start, after)
         return context.resolve(name, body)?.let { resolved ->
-            resolved.asLambda()?.let { text ->
-                val delimiters =
-                    if (openDelimiter == "{{" && closeDelimiter == "}}") ""
-                    else "{{=$openDelimiter $closeDelimiter=}}\n"
-                val template = delimiters + text
-                Template.load(template)?.render(context, partials, indent, newLine)
-                    ?: text.indented(newLine, indent)
-            } ?: resolved.push()?.joinToString(separator = "") {
-                children.render(it, partials, indent, newLine)
-            } ?: resolved.ifTruthy {
-                children.render(it, partials, indent, newLine)
+            if (isSeqCheck) {
+                if (!resolved.push().isNullOrEmpty()) {
+                    children.render(context, partials, indent, newLine)
+                } else {
+                    ""
+                }
+            } else {
+                resolved.asLambda()?.let { text ->
+                    val delimiters =
+                        if (openDelimiter == "{{" && closeDelimiter == "}}") ""
+                        else "{{=$openDelimiter $closeDelimiter=}}\n"
+                    val template = delimiters + text
+                    Template.load(template)?.render(context, partials, indent, newLine)
+                        ?: text.indented(newLine, indent)
+                } ?: resolved.push()?.joinToString(separator = "") {
+                    children.render(it, partials, indent, newLine)
+                } ?: resolved.ifTruthy {
+                    children.render(it, partials, indent, newLine)
+                }
             }
         }
     }
 
     override fun substitute(blocks: Blocks): Section {
-        return Section(name, children.substitute(blocks), openDelimiter, closeDelimiter, input, start, after)
+        return Section(name, isSeqCheck, children.substitute(blocks), openDelimiter, closeDelimiter, input, start, after)
     }
 }
 
