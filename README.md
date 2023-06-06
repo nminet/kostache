@@ -211,7 +211,7 @@ The **TemplateStore** functional interface is used by the rendering process to r
 
 ```kotlin
     fun interface TemplateStore {
-        fun resolve(name: String): Template
+        operator fun get(name: String): Template?
     }
 
     val emptyStore: TemplateStore { _ ->
@@ -232,12 +232,8 @@ class TemplateFolder(
 ) : TemplateStore
 ```
 
-If **extension** is not empty it is appended to names supplied to **resolve**.
-Otherwise the parameter to **resolve** is used as given.
-
-As per Mustache specification, missing templates are handled as null values, not causing error.
-If a file is found and contains valid mustache, it is rendered with the current context. If the file
-does not contain valid mustache, it is rendered as a text string.
+If **extension** is not empty it is appended to names supplied to **get**.
+Otherwise the parameter to **get** is used as given.
 
 The **TemplateFolder** instance maintains a cache of compiled templates. If the file is modified
 on the filesystem and the new contents should be used, the cache can be cleared with
@@ -270,10 +266,8 @@ class TemplateFromResources(
 ) : TemplateStore
 ```
 
-If **extension** is not empty it is appended to names supplied to **resolve**.
-Otherwise the parameter to **resolve** is used as given.
-
-A missing or invalid template is silently ignored (returning an empty Template).
+If **extension** is not empty it is appended to names supplied to **get**.
+Otherwise the parameter to **get** is used as given.
 
 This class maintains a map of compiled templates that remains in memory until
 the instance is collected.
@@ -304,4 +298,4 @@ The implementation depends on the kotlin standard library, including kotlinx ser
 
 Noel MINET
 
-2023-03-03
+2023-06-06

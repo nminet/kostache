@@ -30,13 +30,16 @@ class TemplateFromResources(
     private val templatesCache = mutableMapOf<String, Template>()
     private val postfix = if (extension.isNotEmpty()) ".$extension" else ""
 
-    override fun resolve(name: String): Template {
-        return templatesCache.getOrPut(name) {
+    override operator fun get(name: String): Template? {
+        return templatesCache[name] ?: run {
             val path = "$templateDir/$name$postfix"
-            val text = kotlin.runCatching {
-                classLoader.getResource(path).readText()
-            }.getOrNull()
-            Template(text ?: "")
+            kotlin.runCatching {
+                classLoader.getResource(path)?.readText()
+            }.getOrNull()?.let { text ->
+                Template.load(text)
+            }?.also { template ->
+                templatesCache[name] = template
+            }
         }
     }
 }
