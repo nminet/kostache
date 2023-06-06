@@ -26,7 +26,7 @@ import dev.nminet.kmm.mustache.expects.readText
 
 
 fun interface TemplateStore {
-    fun resolve(name: String): Template
+    operator fun get(name: String): Template?
 }
 
 
@@ -38,7 +38,7 @@ class TemplateFolder(
     private val templates = mutableMapOf<String, Template>()
     private val postfix = if (extension.isNotEmpty()) ".$extension" else ""
 
-    override fun resolve(name: String): Template {
+    override fun get(name: String): Template {
         return templates.getOrPut(name) {
             readText(path, "$name$postfix")?.let {
                 Template(it)
@@ -49,18 +49,17 @@ class TemplateFolder(
     fun clearCache() {
         templates.clear()
     }
-
 }
 
 
-class TemplateMap(sourceMap: Map<String, String>) : TemplateStore {
+class TemplateMap(sourceMap: Map<String, String> = emptyMap()) : TemplateStore {
 
     private val templates = sourceMap.mapValues { (_, template) ->
         Template(template)
     }
 
-    override fun resolve(name: String): Template {
-        return templates[name] ?: Template()
+    override operator fun get(name: String): Template? {
+        return templates[name]
     }
 }
 

@@ -149,7 +149,7 @@ internal class Partial(
         val partial =
             if (isDynamic) context.resolve(name)?.asValue() ?: ""
             else name
-        val loaded = partials.resolve(partial).segments
+        val loaded = partials[partial]?.segments ?: return ""
         val segments = parameters?.let { loaded.substitute(it) } ?: loaded
         return segments.render(context, partials, indent + this.indent, newLine)
     }

@@ -211,7 +211,7 @@ The **TemplateStore** functional interface is used by the rendering process to r
 
 ```kotlin
     fun interface TemplateStore {
-        fun resolve(name: String): Template
+        operator fun get(name: String): Template?
     }
 
     val emptyStore: TemplateStore { _ ->
@@ -304,4 +304,4 @@ The implementation depends on the kotlin standard library, including kotlinx ser
 
 Noel MINET
 
-2023-03-03
+2023-06-06
