@@ -111,5 +111,12 @@ class Template internal constructor(
                 null
             }
         }
+
+        /**
+         * Create an empty [Template] instance.
+         */
+        fun empty(): Template {
+            return Template()
+        }
     }
 }
